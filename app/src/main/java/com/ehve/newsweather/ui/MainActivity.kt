@@ -16,15 +16,34 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.List
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -52,6 +71,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: NewsViewModel,
@@ -59,10 +79,35 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.articles.collectAsState()
 
+    val isRefreshing = uiState is NewsUiState.Loading
+
+    val navController = rememberNavController()
+
     Scaffold(
-        modifier = Modifier.safeDrawingPadding()
+        modifier = Modifier.safeDrawingPadding(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "NewsWeather",
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
     ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.fetchTopHeadlines() },
+            modifier = Modifier.padding(paddingValues)
+        ) {
             when (val state = uiState) {
                 is NewsUiState.Loading -> {
                     Box(
@@ -74,7 +119,7 @@ fun HomeScreen(
                 }
 
                 is NewsUiState.Success -> {
-                    LazyColumn {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(state.articles) { article ->
                             Box(modifier = Modifier.clickable { onNewsClick(article) }) {
                                 NewsCard(article = article)
@@ -90,11 +135,51 @@ fun HomeScreen(
                     ) {
                         Text(
                             text = state.message,
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
                 }
             }
+        }
+    }
+}
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    Surface(
+        modifier = Modifier
+            .padding(24.dp)
+            .clip(RoundedCornerShape(32.dp)),
+        color = Color.White,
+        tonalElevation = 8.dp,
+        shadowElevation = 8.dp
+    ){
+        NavigationBar(
+            containerColor = Color.White,
+            contentColor = Color.Black,
+            tonalElevation = 0.dp
+        ) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            NavigationBarItem(
+                selected = currentRoute == "home",
+                onClick = { navController.navigate("home") },
+                icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color.Black,
+                    indicatorColor = Color(0xFFF0F0F0),
+                )
+            )
+            NavigationBarItem(
+                selected = currentRoute == "favorites",
+                onClick = { navController.navigate("favorites") },
+                icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color.Black,
+                    indicatorColor = Color(0xFFF0F0F0),
+                )
+            )
         }
     }
 }

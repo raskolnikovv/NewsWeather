@@ -1,10 +1,13 @@
 package com.ehve.newsweather.di
 
+import android.content.Context
 import com.ehve.newsweather.BuildConfig
+import com.ehve.newsweather.data.local.FavManager
 import com.ehve.newsweather.data.remote.NewsApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,5 +33,11 @@ object NetworkModule {
     fun provideNewsApiService(retrofit: Retrofit): NewsApiService {
         // Aqui o Hilt automaticamente pega o Retrofit criado acima e cria o serviço
         return retrofit.create(NewsApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavManager(@ApplicationContext context: Context): FavManager {
+        return FavManager(context)
     }
 }
