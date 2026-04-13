@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.retrofit.main)
     implementation(libs.retrofit.gson)
     implementation(libs.coil.compose)
+    implementation(libs.ads.mobile.sdk)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -75,4 +76,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 }

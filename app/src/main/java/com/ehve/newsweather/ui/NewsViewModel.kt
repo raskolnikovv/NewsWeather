@@ -16,21 +16,23 @@ class NewsViewModel @Inject constructor(
     private val repository: NewsRepository
 ) : ViewModel() {
 
-    private val _articles = MutableStateFlow<List<NewsArticle>>(emptyList())
+    private val _news = MutableStateFlow<NewsUiState>(NewsUiState.Loading)
 
-    val articles: StateFlow<List<NewsArticle>> = _articles.asStateFlow()
+    val articles: StateFlow<NewsUiState> = _news.asStateFlow()
 
     init {
         fetchTopHeadlines()
     }
     fun fetchTopHeadlines() {
             viewModelScope.launch {
+                _news.value = NewsUiState.Loading
+
                 val result = repository.getTopHeadlines()
 
                 result.onSuccess { list ->
-                    _articles.value = list
-                }.onFailure {
-                    // Handle error
+                    _news.value = NewsUiState.Success(list)
+                }.onFailure { error ->
+                    _news.value = NewsUiState.Error(error.message ?: "Unknown error")
                 }
             }
         }
