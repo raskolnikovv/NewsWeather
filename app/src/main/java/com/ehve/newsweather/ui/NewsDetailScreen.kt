@@ -26,7 +26,7 @@ import coil.compose.AsyncImage
 fun NewsDetailScreen(
     title: String?,
     description: String?,
-    urlToImage: String?, // Adicione este novo parâmetro na função
+    urlToImage: String?,
     url: String?,
     isFavorite: Boolean, // Estado para saber se é favorito ou não
     onBack: () -> Unit,

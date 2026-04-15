@@ -58,7 +58,7 @@ fun SetupNavGraph(
             NewsDetailScreen(
                 title = title,
                 description = desc,
-                urlToImage = imageUrl, // Pega do repository depois
+                urlToImage = imageUrl,
                 url = url,
                 onBack = { navController.popBackStack() },
                 onUrlClick = { customTabsIntent.launchUrl(context, android.net.Uri.parse(it)) },
