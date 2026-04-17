@@ -46,4 +46,8 @@ class NewsRepositoryImpl @Inject constructor(
 
         favManager.saveFavorites(currentFavorites)
     }
+
+    override fun getFavorites(): Flow<List<NewsArticle>> {
+        return favManager.favoritesFlow
+    }
 }

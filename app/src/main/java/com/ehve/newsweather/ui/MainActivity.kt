@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.ehve.newsweather.ui.components.BottomNavigationBar
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -75,13 +76,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun HomeScreen(
     viewModel: NewsViewModel,
+    navController: NavController,
     onNewsClick: (com.ehve.newsweather.domain.model.NewsArticle) -> Unit
 ) {
     val uiState by viewModel.articles.collectAsState()
 
     val isRefreshing = uiState is NewsUiState.Loading
-
-    val navController = rememberNavController()
 
     Scaffold(
         modifier = Modifier.safeDrawingPadding(),
@@ -121,9 +121,10 @@ fun HomeScreen(
                 is NewsUiState.Success -> {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(state.articles) { article ->
-                            Box(modifier = Modifier.clickable { onNewsClick(article) }) {
-                                NewsCard(article = article)
-                            }
+                            NewsCard(
+                                article = article,
+                                onClick = { onNewsClick(article) }
+                            )
                         }
                     }
                 }
@@ -144,45 +145,45 @@ fun HomeScreen(
         }
     }
 }
-@Composable
-fun BottomNavigationBar(navController: NavController) {
-    Surface(
-        modifier = Modifier
-            .padding(24.dp)
-            .clip(RoundedCornerShape(32.dp)),
-        color = Color.White,
-        tonalElevation = 8.dp,
-        shadowElevation = 8.dp
-    ){
-        NavigationBar(
-            containerColor = Color.White,
-            contentColor = Color.Black,
-            tonalElevation = 0.dp
-        ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry?.destination?.route
-
-            NavigationBarItem(
-                selected = currentRoute == "home",
-                onClick = { navController.navigate("home") },
-                icon = { Icon(Icons.Default.Home, contentDescription = null) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Black,
-                    indicatorColor = Color(0xFFF0F0F0),
-                )
-            )
-            NavigationBarItem(
-                selected = currentRoute == "favorites",
-                onClick = { navController.navigate("favorites") },
-                icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color.Black,
-                    indicatorColor = Color(0xFFF0F0F0),
-                )
-            )
-        }
-    }
-}
+//@Composable
+//fun BottomNavigationBar(navController: NavController) {
+//    Surface(
+//        modifier = Modifier
+//            .padding(24.dp)
+//            .clip(RoundedCornerShape(32.dp)),
+//        color = Color.White,
+//        tonalElevation = 8.dp,
+//        shadowElevation = 8.dp
+//    ){
+//        NavigationBar(
+//            containerColor = Color.White,
+//            contentColor = Color.Black,
+//            tonalElevation = 0.dp
+//        ) {
+//            val navBackStackEntry by navController.currentBackStackEntryAsState()
+//            val currentRoute = navBackStackEntry?.destination?.route
+//
+//            NavigationBarItem(
+//                selected = currentRoute == "home",
+//                onClick = { navController.navigate("home") },
+//                icon = { Icon(Icons.Default.Home, contentDescription = null) },
+//                colors = NavigationBarItemDefaults.colors(
+//                    selectedIconColor = Color.Black,
+//                    indicatorColor = Color(0xFFF0F0F0),
+//                )
+//            )
+//            NavigationBarItem(
+//                selected = currentRoute == "favorites",
+//                onClick = { navController.navigate("favorites") },
+//                icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
+//                colors = NavigationBarItemDefaults.colors(
+//                    selectedIconColor = Color.Black,
+//                    indicatorColor = Color(0xFFF0F0F0),
+//                )
+//            )
+//        }
+//    }
+//}
 
 
 

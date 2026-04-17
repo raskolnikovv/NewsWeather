@@ -8,4 +8,5 @@ interface NewsRepository {
 
     fun isArticleFavorite(url: String): Flow<Boolean>
     suspend fun toggleFavoriteArticle(article: NewsArticle)
+    fun getFavorites(): Flow<List<NewsArticle>>
 }

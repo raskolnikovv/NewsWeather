@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ehve.newsweather.domain.model.NewsArticle
+import com.ehve.newsweather.ui.favorites.FavoritesScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -27,6 +28,7 @@ fun SetupNavGraph(
         composable(route = "home") {
             HomeScreen(
                 viewModel = viewModel,
+                navController = navController,
                 onNewsClick = { article ->
                     val encodedUrl = URLEncoder.encode(article.url, StandardCharsets.UTF_8.toString())
                     val encodedImageUrl = URLEncoder.encode(article.urlToImage ?: "", StandardCharsets.UTF_8.toString())
@@ -74,6 +76,18 @@ fun SetupNavGraph(
                             )
                         )
                     }
+                }
+            )
+        }
+        composable("favorites") {
+            FavoritesScreen(
+                navController = navController,
+                onBack = { navController.popBackStack() },
+                onNewsClick = { article ->
+                    val encodedUrl = URLEncoder.encode(article.url, StandardCharsets.UTF_8.toString())
+                    val encodedImage = URLEncoder.encode(article.urlToImage ?: "", StandardCharsets.UTF_8.toString())
+
+                    navController.navigate("news_detail/${article.title}/$encodedUrl/${article.description}/$encodedImage")
                 }
             )
         }

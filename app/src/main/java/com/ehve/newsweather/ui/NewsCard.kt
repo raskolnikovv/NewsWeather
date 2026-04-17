@@ -18,8 +18,12 @@ import coil.compose.AsyncImage
 import com.ehve.newsweather.domain.model.NewsArticle
 
 @Composable
-fun NewsCard(article: NewsArticle) {
+fun NewsCard(
+    article: NewsArticle,
+    onClick: () -> Unit = {}
+) {
     Card(
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
