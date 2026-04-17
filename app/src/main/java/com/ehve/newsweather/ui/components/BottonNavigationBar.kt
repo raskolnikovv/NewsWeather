@@ -1,5 +1,6 @@
 package com.ehve.newsweather.ui.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -19,18 +20,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+/**
+ * Custom floating Bottom Navigation Bar.
+ */
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     Surface(
         modifier = Modifier
-            .padding(24.dp)
+            .padding(horizontal = 48.dp, vertical = 32.dp)
+            .height(84.dp)
             .clip(RoundedCornerShape(32.dp)),
-        color = Color.White,
+        color = Color.White.copy(alpha = 0.95f),
         tonalElevation = 8.dp,
-        shadowElevation = 8.dp
+        shadowElevation = 12.dp
     ){
         NavigationBar(
-            containerColor = Color.White,
+            containerColor = Color.Transparent,
             contentColor = Color.Black,
             tonalElevation = 0.dp
         ) {
@@ -39,20 +44,26 @@ fun BottomNavigationBar(navController: NavController) {
 
             NavigationBarItem(
                 selected = currentRoute == "home",
-                onClick = { navController.navigate("home") },
-                icon = { Icon(Icons.Default.Home, contentDescription = null) },
+                onClick = {
+                    if (currentRoute != "home") navController.navigate("home")
+                },
+                icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.Black,
                     indicatorColor = Color(0xFFF0F0F0),
+                    unselectedIconColor = Color.Gray
                 )
             )
             NavigationBarItem(
                 selected = currentRoute == "favorites",
-                onClick = { navController.navigate("favorites") },
-                icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = null) },
+                onClick = {
+                    if (currentRoute != "favorites") navController.navigate("favorites")
+                },
+                icon = { Icon(Icons.Default.BookmarkBorder, contentDescription = "Favorites") },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.Black,
                     indicatorColor = Color(0xFFF0F0F0),
+                    unselectedIconColor = Color.Gray
                 )
             )
         }

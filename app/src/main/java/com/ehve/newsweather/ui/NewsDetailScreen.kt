@@ -1,4 +1,4 @@
-package com.ehve.newsweather.ui // Verifique se o pacote está correto
+package com.ehve.newsweather.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -22,101 +22,90 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
+/**
+ * Screen displaying detailed information about a selected news article.
+ */
 @Composable
 fun NewsDetailScreen(
     title: String?,
     description: String?,
     urlToImage: String?,
     url: String?,
-    isFavorite: Boolean, // Estado para saber se é favorito ou não
+    isFavorite: Boolean,
     onBack: () -> Unit,
     onUrlClick: (String) -> Unit,
-    onFavoriteClick: () -> Unit // Função para clicar no coração
+    onFavoriteClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
-    // O Scaffold básico para estrutura, mas sem TopBar, pois vamos desenhar a nossa
     Scaffold { paddingValues ->
-        // Box principal para sobrepor os botões de ação sobre a imagem
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(paddingValues)
         ) {
-
-            // 1. CONTEÚDO SCROLLÁVEL (Imagem + Texto)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
                     .padding(16.dp)
             ) {
-                // Imagem de destaque no topo (Parecido com a referência)
                 AsyncImage(
                     model = urlToImage,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp) // Altura fixa para a imagem
+                        .height(300.dp)
                         .clip(RoundedCornerShape(24.dp))
                 )
 
-                // Área do Texto (Título + Descrição)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp, horizontal = 8.dp)
                 ) {
-                    // Título (Maior e em negrito como na referência "Overview")
                     Text(
                         text = title ?: "",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
 
-                    Spacer(modifier = Modifier.height(100.dp))
-
-                    // Separador sutil (Opcional, mas dá um toque)
+                    Spacer(modifier = Modifier.height(24.dp))
                     HorizontalDivider(color = Color.LightGray, thickness = 1.dp)
-
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Descrição Completa
                     Text(
                         text = description ?: "",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.Gray
                     )
 
-                    // Espaço extra no final para o conteúdo não ficar atrás do botão
                     Spacer(modifier = Modifier.height(100.dp))
                 }
             }
 
-            // 2. BOTÕES DE AÇÃO SUPERIORES (Voltar e Favorito sobre a imagem)
+            // Floating action buttons (Back and Favorite)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp), // Margem interna
-                horizontalArrangement = Arrangement.SpaceBetween, // Separa nas pontas
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
-                // Ícone de Voltar (Circular e com fundo translúcido como na referência)
                 FilledIconButton(
                     onClick = onBack,
                     shape = CircleShape,
                     colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = Color.Black.copy(alpha = 0.5f), // Fundo preto fumê
+                        containerColor = Color.Black.copy(alpha = 0.5f),
                         contentColor = Color.White
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
-                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Voltar")
+                    Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                 }
 
-                // Ícone de Favorito (No canto direito, translúcido)
                 FilledIconButton(
                     onClick = onFavoriteClick,
                     shape = CircleShape,
@@ -126,31 +115,30 @@ fun NewsDetailScreen(
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
-                    // Troca o ícone se for favorito ou não
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
-                        contentDescription = "Favoritar"
+                        contentDescription = "Favorite"
                     )
                 }
             }
 
-            // 3. BOTÃO DE BAIXO (Ler no Navegador fixo no rodapé)
+            // Bottom action: Open in browser
             Button(
                 onClick = { url?.let(onUrlClick) },
                 modifier = Modifier
-                    .align(Alignment.BottomCenter) // Fixa no fundo
+                    .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(16.dp)
-                    .height(56.dp), // Botão maior
-                shape = RoundedCornerShape(16.dp), // Borda arredondada
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black, // Fundo preto como na referência
+                    containerColor = Color.Black,
                     contentColor = Color.White
                 )
             ) {
                 Icon(imageVector = Icons.Default.Language, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Ler Notícia no Navegador", fontWeight = FontWeight.Bold)
+                Text(text = "Read Full Article", fontWeight = FontWeight.Bold)
             }
         }
     }

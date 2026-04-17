@@ -11,11 +11,13 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore(name = "favorites")
 
+/**
+ * Manages news articles persistence using DataStore and GSON.
+ */
 class FavManager(private val context: Context) {
     private val gson = Gson()
     private val FAV_KEY = stringSetPreferencesKey("fav_articles")
 
-    // Salva a lista de favoritos
     suspend fun saveFavorites(articles: List<NewsArticle>) {
         val jsonSet = articles.map { gson.toJson(it) }.toSet()
         context.dataStore.edit { prefs ->
@@ -23,7 +25,6 @@ class FavManager(private val context: Context) {
         }
     }
 
-    // Lê os favoritos e transforma de JSON para Objeto
     val favoritesFlow: Flow<List<NewsArticle>> = context.dataStore.data.map { prefs ->
         val jsonSet = prefs[FAV_KEY] ?: emptySet()
         jsonSet.map { json ->

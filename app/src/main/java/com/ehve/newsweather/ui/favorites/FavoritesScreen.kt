@@ -18,14 +18,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ehve.newsweather.domain.model.NewsArticle
 import com.ehve.newsweather.ui.NewsCard
-import com.ehve.newsweather.ui.components.BottomNavigationBar
+import com.ehve.newsweather.ui.navigateToDetail
 
+/**
+ * Screen displaying the list of articles saved by the user.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesScreen(
-    onNewsClick: (NewsArticle) -> Unit,
     navController: NavController,
     onBack: () -> Unit,
+    onNewsClick: (NewsArticle) -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
     val favorites by viewModel.favoriteArticles.collectAsState()
@@ -33,7 +36,7 @@ fun FavoritesScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Meus Favoritos", style = MaterialTheme.typography.titleLarge) },
+                title = { Text("My Favorites", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     FilledIconButton(
                         onClick = onBack,
@@ -46,14 +49,11 @@ fun FavoritesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Voltar"
+                            contentDescription = "Back"
                         )
                     }
                 }
             )
-        },
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
         }
     ) { padding ->
         if (favorites.isEmpty()) {
@@ -61,7 +61,7 @@ fun FavoritesScreen(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Você ainda não salvou nenhuma notícia.")
+                Text("No saved articles yet.")
             }
         } else {
             LazyColumn(
@@ -72,7 +72,7 @@ fun FavoritesScreen(
                 items(favorites) { article ->
                     NewsCard(
                         article = article,
-                        onClick = { onNewsClick(article) }
+                        onClick = { navController.navigateToDetail(article) }
                     )
                 }
             }

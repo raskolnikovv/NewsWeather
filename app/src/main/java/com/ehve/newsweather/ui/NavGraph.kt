@@ -1,6 +1,5 @@
 package com.ehve.newsweather.ui
 
-import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,9 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.ehve.newsweather.domain.model.NewsArticle
 import com.ehve.newsweather.ui.favorites.FavoritesScreen
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
+/**
+ * Navigation graph definition for the application.
+ */
 @Composable
 fun SetupNavGraph(
     navController: NavHostController,
@@ -22,23 +22,17 @@ fun SetupNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = Routes.HOME
     ) {
-        // Tela Principal
-        composable(route = "home") {
+        composable(route = Routes.HOME) {
             HomeScreen(
                 viewModel = viewModel,
-                navController = navController,
-                onNewsClick = { article ->
-                    val encodedUrl = URLEncoder.encode(article.url, StandardCharsets.UTF_8.toString())
-                    val encodedImageUrl = URLEncoder.encode(article.urlToImage ?: "", StandardCharsets.UTF_8.toString())
-                    navController.navigate("news_detail/${article.title}/$encodedUrl/${article.description}/$encodedImageUrl")
-            })
+                navController = navController
+            )
         }
 
-        // Tela de Detalhes
         composable(
-            route = "news_detail/{title}/{url}/{desc}/{imageUrl}",
+            route = Routes.DETAILS,
             arguments = listOf(
                 navArgument("title") { type = NavType.StringType },
                 navArgument("url") { type = NavType.StringType },
@@ -50,12 +44,12 @@ fun SetupNavGraph(
             val url = backStackEntry.arguments?.getString("url")
             val desc = backStackEntry.arguments?.getString("desc")
             val imageUrl = backStackEntry.arguments?.getString("imageUrl")
+            
             val context = androidx.compose.ui.platform.LocalContext.current
             val customTabsIntent = androidx.browser.customtabs.CustomTabsIntent.Builder().build()
 
-            val viewModel: NewsViewModel = hiltViewModel()
-            val isFavorite by viewModel.getIsFavorite(url ?: "").collectAsState(initial = false)
-
+            val favViewModel: NewsViewModel = hiltViewModel()
+            val isFavorite by favViewModel.getIsFavorite(url ?: "").collectAsState(initial = false)
 
             NewsDetailScreen(
                 title = title,
@@ -67,7 +61,7 @@ fun SetupNavGraph(
                 isFavorite = isFavorite,
                 onFavoriteClick = {
                     if (url != null && title != null && desc != null) {
-                        viewModel.toggleFavorite(
+                        favViewModel.toggleFavorite(
                             NewsArticle(
                                 title = title,
                                 description = desc,
@@ -79,16 +73,12 @@ fun SetupNavGraph(
                 }
             )
         }
-        composable("favorites") {
+
+        composable(route = Routes.FAVORITES) {
             FavoritesScreen(
                 navController = navController,
                 onBack = { navController.popBackStack() },
-                onNewsClick = { article ->
-                    val encodedUrl = URLEncoder.encode(article.url, StandardCharsets.UTF_8.toString())
-                    val encodedImage = URLEncoder.encode(article.urlToImage ?: "", StandardCharsets.UTF_8.toString())
-
-                    navController.navigate("news_detail/${article.title}/$encodedUrl/${article.description}/$encodedImage")
-                }
+                onNewsClick = { article -> navController.navigateToDetail(article) }
             )
         }
     }

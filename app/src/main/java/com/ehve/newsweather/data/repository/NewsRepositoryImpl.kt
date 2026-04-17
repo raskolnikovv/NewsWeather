@@ -5,6 +5,7 @@ import com.ehve.newsweather.data.local.FavManager
 import com.ehve.newsweather.data.remote.NewsApiService
 import com.ehve.newsweather.data.remote.toDomain
 import com.ehve.newsweather.domain.model.NewsArticle
+import com.ehve.newsweather.domain.model.WeatherInfo
 import com.ehve.newsweather.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -26,14 +27,12 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
-    // Verifica se a URL da notícia está na lista de favoritos
     override fun isArticleFavorite(url: String): Flow<Boolean> {
         return favManager.favoritesFlow.map { articles ->
             articles.any { it.url == url }
         }
     }
 
-    // Lógica para adicionar ou remover dos favoritos
     override suspend fun toggleFavoriteArticle(article: NewsArticle) {
         val currentFavorites = favManager.favoritesFlow.first().toMutableList()
         val isFav = currentFavorites.any { it.url == article.url }
@@ -49,5 +48,20 @@ class NewsRepositoryImpl @Inject constructor(
 
     override fun getFavorites(): Flow<List<NewsArticle>> {
         return favManager.favoritesFlow
+    }
+
+    override suspend fun getWeather(lat: Double, lon: Double, city: String): Result<WeatherInfo> {
+        return try {
+            val url = "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current_weather=true"
+            val response = api.getWeather(url)
+            val info = WeatherInfo(
+                temperature = response.currentWeather.temperature,
+                weatherCode = response.currentWeather.weathercode,
+                city = city
+            )
+            Result.success(info)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }

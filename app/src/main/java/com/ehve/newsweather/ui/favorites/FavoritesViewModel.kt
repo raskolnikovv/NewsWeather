@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+/**
+ * ViewModel for managing user's favorite news articles.
+ */
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val repository: NewsRepository
 ) : ViewModel() {
 
-    // Transforma o Flow do repositório em um StateFlow que a UI consegue ler
     val favoriteArticles: StateFlow<List<NewsArticle>> = repository.getFavorites()
         .stateIn(
             scope = viewModelScope,
