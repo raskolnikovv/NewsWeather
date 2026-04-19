@@ -1,8 +1,7 @@
 # NewsWeather
+Android application that combines real-time news headlines with local weather information based on the user's current location.
 
 https://github.com/user-attachments/assets/3133d47a-1721-4603-927e-75d0f18ff30f
-
-Android application that combines real-time news headlines with local weather information based on the user's current location.
 
 ## Tech Stack
 - **UI:** Jetpack Compose with Material 3.
